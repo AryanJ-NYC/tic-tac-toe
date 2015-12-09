@@ -1,0 +1,38 @@
+.container {
+    height: 100vh;
+    width: 100%;
+}
+
+.square {
+    height: 100%;
+}
+
+.row {
+    height: 33.333%;
+}
+
+.left {
+    border-right: 1px solid black;
+}
+
+.middle {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.right {
+    border-left: 1px solid black;
+}
+
+.top {
+    border-bottom: 1px solid black;
+}
+
+.center {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.bottom {
+    border-top: 1px solid black;
+}
