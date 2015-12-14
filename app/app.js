@@ -16,5 +16,10 @@ app.controller('ticTacToeCtrl', function ($scope) {
         turn = turn == X ? CIRCLE : X;
     }
 
-
+    $scope.writeToBoard = function (row, col) {
+        if ($scope.board[row][col] == '') {
+            $scope.board[row][col] = turn;
+            toggleTurn();
+        }
+    }
 });

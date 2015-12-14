@@ -3,6 +3,10 @@
     width: 100%;
 }
 
+a, a:hover {
+    color: inherit;
+}
+
 .square {
     height: 100%;
 }
@@ -35,4 +39,8 @@
 
 .bottom {
     border-top: 1px solid black;
+}
+
+.board-text {
+    font-size: 156px;
 }

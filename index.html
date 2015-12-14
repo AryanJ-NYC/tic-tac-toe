@@ -12,19 +12,45 @@
 <body>
   <div class="container" ng-app="ticTacToeApp" ng-controller="ticTacToeCtrl">
     <div class="row">
-      <div class="square top left col-xs-3">{{ board[0][0] }}</div>
-      <div class="square top middle col-xs-3">{{ board[0][1] }}</div>
-      <div class="square top right col-xs-3">{{ board[0][2] }}</div>
+      <a ng-click="writeToBoard(0, 0)">
+        <div class="square top left col-xs-3"><p class="text-lg-center board-text">{{ board[0][0] }}</p></div>
+      </a>
+
+      <a ng-click="writeToBoard(0, 1)">
+        <div class="square top middle col-xs-3"><p class="text-lg-center board-text">{{ board[0][1] }}</p></div>
+      </a>
+
+      <a ng-click="writeToBoard(0, 2)">
+        <div class="square top right col-xs-3"><p class="text-lg-center board-text">{{ board[0][2] }}</p></div>
+      </a>
     </div>
+
     <div class="row">
-      <div class="square center left col-xs-3">{{ board[1][0] }}</div>
-      <div class="square center middle col-xs-3">{{ board[1][1] }}</div>
-      <div class="square center right col-xs-3">{{ board[1][2] }}</div>
+      <a ng-click="writeToBoard(1, 0)">
+        <div class="square center left col-xs-3"><p class="text-lg-center board-text">{{ board[1][0] }}</p></div>
+      </a>
+
+      <a ng-click="writeToBoard(1, 1)">
+        <div class="square center middle col-xs-3"><p class="text-lg-center board-text">{{ board[1][1] }}</p></div>
+      </a>
+
+      <a ng-click="writeToBoard(1, 2)">
+        <div class="square center right col-xs-3"><p class="text-lg-center board-text">{{ board[1][2] }}</p></div>
+      </a>
     </div>
+
     <div class="row">
-      <div class="square bottom left col-xs-3">{{ board[2][0] }}</div>
-      <div class="square bottom middle col-xs-3">{{ board[2][1] }}</div>
-      <div class="square bottom right col-xs-3">{{ board[2][2] }}</div>
+      <a ng-click="writeToBoard(2, 0)">
+        <div class="square bottom left col-xs-3"><p class="text-lg-center board-text">{{ board[2][0] }}</p></div>
+      </a>
+
+      <a ng-click="writeToBoard(2, 1)">
+        <div class="square bottom middle col-xs-3"><p class="text-lg-center board-text">{{ board[2][1] }}</p></div>
+      </a>
+
+      <a ng-click="writeToBoard(2, 2)">
+        <div class="square bottom right col-xs-3"><p class="text-lg-center board-text">{{ board[2][2] }}</p></div>
+      </a>
     </div>
   </div>
 
