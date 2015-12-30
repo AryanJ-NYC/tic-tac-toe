@@ -2,9 +2,8 @@ app = angular.module('ticTacToeApp', []);
 
 app.controller('ticTacToeCtrl', function ($scope) {
     var CIRCLE = 'O',
-        X = 'X';
-
-    turn = CIRCLE;
+        X = 'X',
+        turn = CIRCLE;
 
     $scope.board = [
         ['', '', ''],
@@ -21,5 +20,10 @@ app.controller('ticTacToeCtrl', function ($scope) {
             $scope.board[row][col] = turn;
             toggleTurn();
         }
-    }
+    };
+
+    $scope.choosePlayer = function (choice) {
+        turn = choice;
+        player = choice;
+    };
 });
