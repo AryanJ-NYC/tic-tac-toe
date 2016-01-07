@@ -3,7 +3,7 @@ app = angular.module('ticTacToeApp', []);
 app.controller('ticTacToeCtrl', function ($scope) {
     var CIRCLE = 'O',
         X = 'X',
-        turn = CIRCLE;
+        currentPlayer = CIRCLE;
 
     $scope.board = [
         ['', '', ''],
@@ -12,7 +12,17 @@ app.controller('ticTacToeCtrl', function ($scope) {
     ];
 
     function toggleTurn() {
-        turn = turn == X ? CIRCLE : X;
+        currentPlayer = currentPlayer == X ? CIRCLE : X;
+    }
+
+    /**
+     * Takes the true mod of a number; created due to JavaScript modulus "bug"
+     * @param n {number}
+     * @param m {number}
+     * @returns {number} - remainder of n/m, takes sign of the divisor
+     */
+    function mod(n, m) {
+        return ((n % m) + m) % m;
     }
 
     function getEmptySquares() {
@@ -25,15 +35,29 @@ app.controller('ticTacToeCtrl', function ($scope) {
         return emptySquares;
     }
 
+    /**
+     * Checks board for a winner
+     * @return {Character} winner of board, null if no winner
+     */
+    function checkWin(row, col, player) {
+        if (
+            ($scope.board[row][(col+1)%3] == player && $scope.board[row][(col+2)%3] == player) ||
+            ($scope.board[(row+1)%3][col] == player && $scope.board[(row+2)%3][col] == player) ||
+            (row == col && $scope.board[(row+1)%3][(col+1)%3] == player && $scope.board[(row+2)%3][(col+2)%3] == player) ||
+            (row+col == 2 && $scope.board[(row+1)%3][mod(col-1, 3)] == player && $scope.board[(row+2)%3][mod(col-2, 3)] == player)
+        ) return player;
+    }
+
     $scope.writeToBoard = function (row, col) {
         if ($scope.board[row][col] == '') {
-            $scope.board[row][col] = turn;
+            $scope.board[row][col] = currentPlayer;
+            checkWin(row, col, currentPlayer);
             toggleTurn();
         }
     };
 
     $scope.choosePlayer = function (choice) {
-        turn = choice;
+        currentPlayer = choice;
         player = choice;
     };
 });
