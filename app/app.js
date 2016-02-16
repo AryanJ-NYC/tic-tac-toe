@@ -46,12 +46,18 @@ app.controller('ticTacToeCtrl', function ($scope) {
             (row == col && $scope.board[(row+1)%3][(col+1)%3] == player && $scope.board[(row+2)%3][(col+2)%3] == player) ||
             (row+col == 2 && $scope.board[(row+1)%3][mod(col-1, 3)] == player && $scope.board[(row+2)%3][mod(col-2, 3)] == player)
         ) return player;
+        else return null;
     }
 
     $scope.writeToBoard = function (row, col) {
         if ($scope.board[row][col] == '') {
             $scope.board[row][col] = currentPlayer;
-            checkWin(row, col, currentPlayer);
+            var winner = checkWin(row, col, currentPlayer);
+            if (winner != null) {
+                // TODO update score
+                // TODO pop-up win modal with score
+                // TODO empty board
+            }
             toggleTurn();
         }
     };
