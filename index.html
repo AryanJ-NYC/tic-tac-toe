@@ -11,6 +11,7 @@
 
 <body>
 <div class="container" ng-app="ticTacToeApp" ng-controller="ticTacToeCtrl">
+  <!-- Choose Player modal -->
   <div id="choosePlayer" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -26,6 +27,8 @@
       </div>
     </div>
   </div>
+  <!-- / Choose Player modal -->
+
   <div class="row">
     <a ng-click="writeToBoard(0, 0)">
       <div class="square top left col-xs-3"><p class="text-lg-center board-text">{{ board[0][0] }}</p></div>
