@@ -1,18 +1,24 @@
 app = angular.module('ticTacToeApp', []);
 
 app.controller('ticTacToeCtrl', function ($scope) {
-    var CIRCLE = 'O',
-        X = 'X',
-        currentPlayer = CIRCLE;
-
     $scope.board = [
         ['', '', ''],
         ['', '', ''],
         ['', '', '']
     ];
 
+    var CIRCLE = 'O',
+        X = 'X',
+        currentPlayer = CIRCLE,
+        player,
+        score = [
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', '']
+        ];
+
     function toggleTurn() {
-        currentPlayer = currentPlayer == X ? CIRCLE : X;
+        currentPlayer = (currentPlayer == X) ? CIRCLE : X;
     }
 
     /**
@@ -49,6 +55,24 @@ app.controller('ticTacToeCtrl', function ($scope) {
         else return null;
     }
 
+    function AIMove(currentPlayer) {
+        console.log("In AIMove");
+        var otherPlayer = (currentPlayer == X) ? CIRCLE : X;
+        var emptySquares = getEmptySquares();
+        for (var emptySquare = 0; emptySquare < emptySquares.length; ++emptySquare) {
+            var row = emptySquares[emptySquare][0],
+                col = emptySquares[emptySquare][1];
+            if (checkWin(row, col, currentPlayer) != null) {
+                console.log("In currentPlayerCheckWin");
+                $scope.writeToBoard(row, col)
+                return;
+            } else if (checkWin(row, col, otherPlayer) != null) {
+                $scope.writeToBoard(row, col);
+                return;
+            } // TODO write getBestMove(player) and call if no moves done
+        }
+    }
+
     $scope.writeToBoard = function (row, col) {
         if ($scope.board[row][col] == '') {
             $scope.board[row][col] = currentPlayer;
@@ -59,6 +83,8 @@ app.controller('ticTacToeCtrl', function ($scope) {
                 // TODO empty board
             }
             toggleTurn();
+            console.log("Current Player is " + currentPlayer + ". Player is " + player);
+            if (currentPlayer != player) AIMove(currentPlayer);
         }
     };
 
