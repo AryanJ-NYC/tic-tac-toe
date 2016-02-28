@@ -7,17 +7,20 @@ app.controller('ticTacToeCtrl', function ($scope) {
         ['', '', '']
     ];
 
-    var CIRCLE = 'O',
+    var NUM_TRIALS = 500,
+        CIRCLE = 'O',
         X = 'X',
-        currentPlayer = CIRCLE,
-        player,
+        DRAW = 'D',
+        currentPlayer,
+        humanPlayer,
+        computerPlayer,
         score = [
-            ['', '', ''],
-            ['', '', ''],
-            ['', '', '']
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
         ];
 
-    function toggleTurn() {
+    function toggleTurn () {
         currentPlayer = (currentPlayer == X) ? CIRCLE : X;
     }
 
@@ -27,69 +30,152 @@ app.controller('ticTacToeCtrl', function ($scope) {
      * @param m {number}
      * @returns {number} - remainder of n/m, takes sign of the divisor
      */
-    function mod(n, m) {
+    function mod (n, m) {
         return ((n % m) + m) % m;
     }
 
-    function getEmptySquares() {
+    function getEmptySquares (board) {
+        board = (typeof board !== 'undefined') ? board : $scope.board;
         var emptySquares = [];
-        for (var i = 0; i < $scope.board.length; i++) {
-            for (var j = 0; j < $scope.board[i].length; j++) {
-                if ($scope.board[i][j] == '') emptySquares.push([i, j]);
+        for (var i = 0; i < board.length; i++) {
+            for (var j = 0; j < board[i].length; j++) {
+                if (board[i][j] == '') emptySquares.push([i, j]);
             }
         }
         return emptySquares;
+    }
+
+    function copyBoard () {
+        var board = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];
+        for (var row = 0; row < $scope.board.length; ++row) {
+            for (var col = 0; col < $scope.board.length; ++col) {
+                board[row][col] = $scope.board[row][col];
+            }
+        }
+        return board;
     }
 
     /**
      * Checks board for a winner
      * @return {Character} winner of board, null if no winner
      */
-    function checkWin(row, col, player) {
+    function checkWin (player, board) {
+        board = (typeof board !== 'undefined') ? board : $scope.board;
+        if (getEmptySquares(board).length == 0) return DRAW;
         if (
-            ($scope.board[row][(col+1)%3] == player && $scope.board[row][(col+2)%3] == player) ||
-            ($scope.board[(row+1)%3][col] == player && $scope.board[(row+2)%3][col] == player) ||
-            (row == col && $scope.board[(row+1)%3][(col+1)%3] == player && $scope.board[(row+2)%3][(col+2)%3] == player) ||
-            (row+col == 2 && $scope.board[(row+1)%3][mod(col-1, 3)] == player && $scope.board[(row+2)%3][mod(col-2, 3)] == player)
+            (board[0][0] == player && board[0][1] == player && board[0][2] == player) || // first row
+            (board[1][0] == player && board[1][1] == player && board[1][2] == player) || // second row
+            (board[2][0] == player && board[2][1] == player && board[2][2] == player) || // third row
+            (board[0][0] == player && board[1][0] == player && board[2][0] == player) || // first column
+            (board[0][1] == player && board[1][1] == player && board[2][1] == player) || // second column
+            (board[0][2] == player && board[1][2] == player && board[2][2] == player) || // third column
+            (board[0][0] == player && board[1][1] == player && board[2][2] == player) || // left-to-right diagonal
+            (board[0][2] == player && board[1][1] == player && board[2][0] == player)    // right-to-left diagonal
         ) return player;
         else return null;
     }
 
-    function AIMove(currentPlayer) {
-        console.log("In AIMove");
+    function AIMove (currentPlayer) {
+        var board = copyBoard();
         var otherPlayer = (currentPlayer == X) ? CIRCLE : X;
         var emptySquares = getEmptySquares();
         for (var emptySquare = 0; emptySquare < emptySquares.length; ++emptySquare) {
             var row = emptySquares[emptySquare][0],
                 col = emptySquares[emptySquare][1];
-            if (checkWin(row, col, currentPlayer) != null) {
-                console.log("In currentPlayerCheckWin");
-                $scope.writeToBoard(row, col)
-                return;
-            } else if (checkWin(row, col, otherPlayer) != null) {
+            board[row][col] = currentPlayer;
+            if (checkWin(currentPlayer, board) != null) {
                 $scope.writeToBoard(row, col);
                 return;
-            } // TODO write getBestMove(player) and call if no moves done
+            }
+            board[row][col] = otherPlayer;
+            if (checkWin(otherPlayer, board) != null) {
+                $scope.writeToBoard(row, col);
+                return;
+            }
+            board[row][col] = '';
         }
+        var bestMove = getBestMove(currentPlayer);
+        $scope.writeToBoard(bestMove[0], bestMove[1]);
+    }
+
+    function getBestMove (player) {
+        var originalPlayer = player;
+        for (var i = 0; i < NUM_TRIALS; ++i) {
+            var board = copyBoard();
+            do {
+                var emptySquares = getEmptySquares(board);
+                if (emptySquares.length > 0) {
+                    var randomEmptySquare = emptySquares[Math.floor(Math.random() * emptySquares.length)],
+                        randomRow = randomEmptySquare[0],
+                        randomCol = randomEmptySquare[1],
+                        playerToCheck = player;
+                    board[randomRow][randomCol] = player;
+                    player = (player == X) ? CIRCLE : X;
+                } else break;
+            } while (checkWin(playerToCheck, board) == null);
+            var winner = checkWin(playerToCheck, board);
+            if (winner != DRAW) {
+                updateScore(board, originalPlayer, winner);
+            }
+        }
+        emptySquares = getEmptySquares($scope.board);
+        randomEmptySquare = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+        var bestMove = randomEmptySquare,
+            maxScore = Number.NEGATIVE_INFINITY;
+        for (var emptySquare = 0; emptySquare < emptySquares.length; ++emptySquare) {
+            var row = emptySquares[emptySquare][0],
+                col = emptySquares[emptySquare][1];
+            if (score[row][col] > maxScore) {
+                maxScore = score[row][col];
+                bestMove = [row, col];
+            }
+        }
+        return bestMove;
+    }
+
+    function updateScore (board, player, winner) {
+        var otherPlayer = (player == X) ? CIRCLE : X;
+        for (var row = 0; row < board.length; ++row) {
+            for (var col = 0; col < board[row].length; ++col) {
+                if (board[row][col] == player && winner == player) ++score[row][col];
+                else if (board[row][col] == player && winner == otherPlayer) --score[row][col];
+            }
+        }
+    }
+
+    function resetScoreBoard () {
+        score = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];
     }
 
     $scope.writeToBoard = function (row, col) {
         if ($scope.board[row][col] == '') {
             $scope.board[row][col] = currentPlayer;
-            var winner = checkWin(row, col, currentPlayer);
+            var winner = checkWin(currentPlayer);
             if (winner != null) {
+                return;
                 // TODO update score
                 // TODO pop-up win modal with score
                 // TODO empty board
             }
             toggleTurn();
-            console.log("Current Player is " + currentPlayer + ". Player is " + player);
-            if (currentPlayer != player) AIMove(currentPlayer);
+            if (currentPlayer == computerPlayer) {
+                AIMove(currentPlayer);
+                resetScoreBoard();
+            }
         }
     };
 
     $scope.choosePlayer = function (choice) {
         currentPlayer = choice;
-        player = choice;
+        humanPlayer = choice;
+        computerPlayer = (humanPlayer == CIRCLE) ? X : CIRCLE;
     };
 });
