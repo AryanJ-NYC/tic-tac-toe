@@ -12,8 +12,8 @@
 <body>
 <div class="container" ng-app="ticTacToeApp" ng-controller="ticTacToeCtrl">
   <!-- Choose Player modal -->
-  <div id="choosePlayer" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
+  <div id="choosePlayer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="choosePlayer">
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">O or X?</h4>
@@ -28,6 +28,26 @@
     </div>
   </div>
   <!-- / Choose Player modal -->
+
+  <!-- Game Over modal -->
+  <div id="gameOver" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gameOver">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">GAME OVER!</h4>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <h4>Score</h4>
+            <p>Human - {{ overallScore[humanPlayer] }}<br/>
+            Computer - {{ overallScore[computerPlayer] }}</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- / Game Over modal -->
 
   <div class="row">
     <a ng-click="writeToBoard(0, 0)">
