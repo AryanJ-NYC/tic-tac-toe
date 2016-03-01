@@ -24,6 +24,12 @@
             <button class="btn col-xs-6 text-lg-center board-text" ng-click="choosePlayer('X')" data-dismiss="modal">X</button>
           </div>
         </div>
+        <div class="modal-footer">
+          <div class="container-fluid">
+            <p class="text-md-left"><em>Instructions</em><br/>
+            Click or tap where you'd like to move.  Humans go first.  Play will alternate each game.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -39,10 +45,12 @@
         <div class="modal-body">
           <div class="container-fluid">
             <h4>Score</h4>
-            <p>Human - {{ overallScore[humanPlayer] }}<br/>
-            Computer - {{ overallScore[computerPlayer] }}</p>
+            <p>Human: {{ overallScore[humanPlayer] }}<br/>
+            Computer: {{ overallScore[computerPlayer] }}</p>
           </div>
-
+        </div>
+        <div class="modal-footer">
+          <button class="btn" ng-click="newGame()" data-dismiss="modal">New Game</button>
         </div>
       </div>
     </div>

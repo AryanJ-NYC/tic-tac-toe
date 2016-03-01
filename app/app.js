@@ -16,6 +16,7 @@ app.controller('ticTacToeCtrl', function ($scope) {
         X = 'X',
         DRAW = 'D',
         currentPlayer,
+        firstPlayer,
         scoreBoard = [
             [0, 0, 0],
             [0, 0, 0],
@@ -25,6 +26,7 @@ app.controller('ticTacToeCtrl', function ($scope) {
 
     $scope.choosePlayer = function (choice) {
         currentPlayer = choice;
+        firstPlayer = choice;
         $scope.humanPlayer = choice;
         $scope.computerPlayer = ($scope.humanPlayer == CIRCLE) ? X : CIRCLE;
     };
@@ -170,10 +172,6 @@ app.controller('ticTacToeCtrl', function ($scope) {
             var winner = checkWin(currentPlayer);
             if (winner != null) {
                 gameOver(winner);
-                return;
-                // TODO update score
-                // TODO pop-up win modal with score
-                // TODO empty board
             }
             toggleTurn();
             if (currentPlayer == $scope.computerPlayer) {
@@ -186,7 +184,19 @@ app.controller('ticTacToeCtrl', function ($scope) {
     function gameOver (winner) {
         //if ($scope.overallScore[winner] == null) $scope.overallScore[winner] = 0;
         ++$scope.overallScore[winner];
-        console.log(Object.keys($scope.overallScore));
         $('#gameOver').modal('show');
+    }
+
+    $scope.newGame = function () {
+        $scope.board = [
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', '']
+        ];
+        currentPlayer = (firstPlayer == X) ? CIRCLE : X;
+        firstPlayer = currentPlayer;
+        if (currentPlayer == $scope.computerPlayer) {
+            AIMove(currentPlayer);
+        }
     }
 });
