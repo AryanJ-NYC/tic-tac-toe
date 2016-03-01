@@ -44,3 +44,7 @@ a, a:hover {
 .board-text {
     font-size: 15vw;
 }
+
+.choose-player-btn {
+    border: 1px solid black;
+}
