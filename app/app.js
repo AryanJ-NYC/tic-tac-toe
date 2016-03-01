@@ -12,6 +12,8 @@ app.controller('ticTacToeCtrl', function ($scope) {
     $scope.computerPlayer = '';
 
     var NUM_TRIALS = 500,
+        WIN_WEIGHT = 1,
+        LOSS_WEIGHT = 1,
         CIRCLE = 'O',
         X = 'X',
         DRAW = 'D',
@@ -23,7 +25,10 @@ app.controller('ticTacToeCtrl', function ($scope) {
             [0, 0, 0]
         ];
 
-
+    /**
+     * Function run after user chooses O or X
+     * @param {Character} choice
+     */
     $scope.choosePlayer = function (choice) {
         currentPlayer = choice;
         firstPlayer = choice;
@@ -45,6 +50,10 @@ app.controller('ticTacToeCtrl', function ($scope) {
         return ((n % m) + m) % m;
     }
 
+    /**
+     * @param board
+     * @returns {Array} - an array of [row, column] values that are empty in board.
+     */
     function getEmptySquares (board) {
         board = (typeof board !== 'undefined') ? board : $scope.board;
         var emptySquares = [];
@@ -56,6 +65,10 @@ app.controller('ticTacToeCtrl', function ($scope) {
         return emptySquares;
     }
 
+    /**
+     * Returns a copy of the current tic-tac-toe board
+     * @returns {*[]}
+     */
     function copyBoard () {
         var board = [
             [0, 0, 0],
@@ -72,6 +85,8 @@ app.controller('ticTacToeCtrl', function ($scope) {
 
     /**
      * Checks board for a winner
+     * @param player - last player to move
+     * @param board - the board to be checked
      * @return {Character} winner of board, null if no winner
      */
     function checkWin (player, board) {
@@ -90,6 +105,11 @@ app.controller('ticTacToeCtrl', function ($scope) {
         else return null;
     }
 
+    /**
+     * The logic behind the computer's next move.  Wins or blocks, if possible.  If not, runs getBestMove.
+     * @param currentPlayer - the computer player's value (X or O)
+     *
+     */
     function AIMove (currentPlayer) {
         var board = copyBoard();
         var otherPlayer = (currentPlayer == X) ? CIRCLE : X;
@@ -113,11 +133,18 @@ app.controller('ticTacToeCtrl', function ($scope) {
         $scope.writeToBoard(bestMove[0], bestMove[1]);
     }
 
+    /**
+     * Runs a monte carlo simulation on NUM_TRIALS to find the move that results in the most wins
+     * @param player - the computer player's value (X or O)
+     * @returns {*} - a [row, column] value of the computer's best move
+     */
     function getBestMove (player) {
         var originalPlayer = player;
         for (var i = 0; i < NUM_TRIALS; ++i) {
             var board = copyBoard();
             do {
+            // randomly pick a square, move then alternate to other player to create randomly-played board to score
+            // board is scored once a winner is established (O, X or draw)
                 var emptySquares = getEmptySquares(board);
                 if (emptySquares.length > 0) {
                     var randomEmptySquare = emptySquares[Math.floor(Math.random() * emptySquares.length)],
@@ -148,12 +175,20 @@ app.controller('ticTacToeCtrl', function ($scope) {
         return bestMove;
     }
 
+    /**
+     * Goes through a board and adds a point for each move where the player and winner match, detracts a point if not
+     * @param board - board to score against
+     * @param player - player to score against
+     * @param winner - winner of the board
+     */
     function updateScore (board, player, winner) {
         var otherPlayer = (player == X) ? CIRCLE : X;
         for (var row = 0; row < board.length; ++row) {
             for (var col = 0; col < board[row].length; ++col) {
-                if (board[row][col] == player && winner == player) ++scoreBoard[row][col];
-                else if (board[row][col] == player && winner == otherPlayer) --scoreBoard[row][col];
+                if (board[row][col] == player && winner == player)
+                    scoreBoard[row][col] += WIN_WEIGHT;
+                else if (board[row][col] == player && winner == otherPlayer)
+                    scoreBoard[row][col] -= LOSS_WEIGHT;
             }
         }
     }
@@ -166,6 +201,11 @@ app.controller('ticTacToeCtrl', function ($scope) {
         ];
     }
 
+    /**
+     * Writes to the current tic-tac-toe board
+     * @param row - row where next move should be written
+     * @param col - column where next move should be written
+     */
     $scope.writeToBoard = function (row, col) {
         if ($scope.board[row][col] == '') {
             $scope.board[row][col] = currentPlayer;
